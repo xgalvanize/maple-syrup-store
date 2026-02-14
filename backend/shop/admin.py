@@ -62,5 +62,18 @@ class OrderAdmin(admin.ModelAdmin):
     display_shipping.short_description = "Shipping"
     
     def shipping_address(self, obj):
-        return f"{obj.shipping_region}, {obj.shipping_country} {obj.shipping_postal}"
+        parts = []
+        if obj.shipping_address1:
+            parts.append(obj.shipping_address1)
+        if obj.shipping_address2:
+            parts.append(obj.shipping_address2)
+        if obj.shipping_city:
+            parts.append(obj.shipping_city)
+        if obj.shipping_region:
+            parts.append(obj.shipping_region)
+        if obj.shipping_country:
+            parts.append(obj.shipping_country)
+        if obj.shipping_postal:
+            parts.append(obj.shipping_postal)
+        return ", ".join(parts) if parts else "N/A"
     shipping_address.short_description = "Ship To"
