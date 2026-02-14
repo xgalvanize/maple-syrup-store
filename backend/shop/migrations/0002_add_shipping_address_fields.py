@@ -1,0 +1,26 @@
+from django.db import migrations, models
+
+
+class Migration(migrations.Migration):
+
+    dependencies = [
+        ("shop", "0001_initial"),
+    ]
+
+    operations = [
+        migrations.AddField(
+            model_name="order",
+            name="shipping_address1",
+            field=models.CharField(blank=True, max_length=200),
+        ),
+        migrations.AddField(
+            model_name="order",
+            name="shipping_address2",
+            field=models.CharField(blank=True, max_length=200),
+        ),
+        migrations.AddField(
+            model_name="order",
+            name="shipping_city",
+            field=models.CharField(blank=True, max_length=100),
+        ),
+    ]

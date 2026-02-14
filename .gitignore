@@ -1,0 +1,40 @@
+# Secrets and credentials (NEVER commit these)
+/helm-chart/secrets.yaml
+/helm-chart/.secrets/
+secrets-*.yaml
+.env
+.env.local
+.env.*.local
+
+# Environment variable files
+/config/secrets/
+/k8s/secrets/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# Node
+node_modules/
+build/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Kind
+.kind-config.yaml
+
+# Helm
+/helm-chart/Chart.lock
+/helm-chart/charts/

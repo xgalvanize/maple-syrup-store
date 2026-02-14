@@ -1,0 +1,81 @@
+# Default values for maple-syrup-store
+
+replicaCount: 1
+
+backend:
+  image:
+    repository: maple-syrup-backend
+    tag: latest
+    pullPolicy: IfNotPresent
+  
+  resources:
+    requests:
+      memory: 256Mi
+      cpu: 100m
+    limits:
+      memory: 512Mi
+      cpu: 500m
+  
+  env:
+    DB_NAME: maple_store
+    DB_USER: maple_user
+    DB_HOST: postgres
+    DB_PORT: "5432"
+    ALLOWED_HOSTS: "localhost,backend,*"
+    DEBUG: "false"
+  
+  # Secrets (should be in helm-chart/secrets.yaml)
+  secrets:
+    DB_PASSWORD: maple_pass
+    SECRET_KEY: django-insecure-change-me-in-secrets-yaml
+
+frontend:
+  image:
+    repository: maple-syrup-frontend
+    tag: latest
+    pullPolicy: IfNotPresent
+  
+  resources:
+    requests:
+      memory: 128Mi
+      cpu: 50m
+    limits:
+      memory: 256Mi
+      cpu: 200m
+
+postgres:
+  image:
+    repository: postgres
+    tag: "16"
+    pullPolicy: IfNotPresent
+  
+  env:
+    POSTGRES_DB: maple_store
+    POSTGRES_USER: maple_user
+  
+  # Secrets (should be in helm-chart/secrets.yaml)
+  secrets:
+    POSTGRES_PASSWORD: maple_pass
+  
+  storage:
+    size: 1Gi
+    accessMode: ReadWriteOnce
+
+ingress:
+  enabled: false
+  className: nginx
+  host: maple.local
+
+django:
+  superuser:
+    username: ""
+    email: ""
+    password: ""
+
+service:
+  frontend:
+    type: LoadBalancer
+    port: 80
+  backend:
+    type: ClusterIP
+    port: 8000

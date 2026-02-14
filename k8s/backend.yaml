@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+        - name: backend
+          image: maple-syrup-backend:latest
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: DB_NAME
+              value: maple_store
+            - name: DB_USER
+              value: maple_user
+            - name: DB_PASSWORD
+              value: maple_pass
+            - name: DB_HOST
+              value: postgres
+            - name: DB_PORT
+              value: "5432"
+            - name: ALLOWED_HOSTS
+              value: "localhost,backend"
+          ports:
+            - containerPort: 8000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend
+spec:
+  selector:
+    app: backend
+  ports:
+    - port: 8000
+      targetPort: 8000

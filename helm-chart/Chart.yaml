@@ -1,0 +1,20 @@
+#!/bin/bash
+# Helm chart for Maple Syrup Store
+# Install with: helm install maple-syrup ./helm-chart -n maple-syrup --create-namespace
+# Upgrade with: helm upgrade maple-syrup ./helm-chart -n maple-syrup
+# Delete with: helm uninstall maple-syrup -n maple-syrup
+
+apiVersion: v2
+name: maple-syrup-store
+description: Maple Syrup E-Commerce Store
+type: application
+version: 0.1.0
+appVersion: "1.0.0"
+keywords:
+  - maple-syrup
+  - ecommerce
+  - django
+  - react
+maintainers:
+  - name: Farmer
+    email: farmer@maplesyrup.co

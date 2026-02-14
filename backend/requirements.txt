@@ -1,0 +1,7 @@
+Django>=5.1
+graphene-django>=3.2
+django-graphql-jwt>=0.4
+psycopg2-binary>=2.9
+django-cors-headers>=4.4
+whitenoise>=6.7
+gunicorn>=22.0
