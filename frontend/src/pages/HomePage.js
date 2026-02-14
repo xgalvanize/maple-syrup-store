@@ -38,6 +38,10 @@ export default function HomePage() {
 
   return (
     <div>
+      <div className="banner">
+        <img src="/images/banner.jpg" alt="Maple Syrup Banner" />
+      </div>
+
       <header className="hero">
         <div>
           <h1>Pure Maple Syrup, Delivered</h1>

@@ -113,6 +113,20 @@ body {
   opacity: 0.8;
 }
 
+.banner {
+  width: 100%;
+  margin-bottom: 2rem;
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+}
+
+.banner img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
 .hero {
   display: flex;
   justify-content: space-between;
