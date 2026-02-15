@@ -13,10 +13,13 @@ class Command(BaseCommand):
         if created:
             user.set_password("demo1234")
             user.email = "demo@maplesyrup.co"
-            user.save()
+        user.is_staff = False
+        user.is_superuser = False
+        user.save()
+        if created:
             self.stdout.write(self.style.SUCCESS("Created demo user: demo_user"))
         else:
-            self.stdout.write("Demo user already exists")
+            self.stdout.write("Demo user already exists (ensured non-staff)")
 
         products = [
             {

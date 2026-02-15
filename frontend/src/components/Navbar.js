@@ -14,10 +14,21 @@ const GET_CART = gql`
   }
 `;
 
+const ME = gql`
+  query Me {
+    me {
+      id
+      isStaff
+    }
+  }
+`;
+
 export default function Navbar() {
   const { isLoggedIn, logout } = useAuth();
   const { data } = useQuery(GET_CART, { skip: !isLoggedIn, fetchPolicy: "cache-and-network" });
+  const { data: meData } = useQuery(ME, { skip: !isLoggedIn });
   const cartCount = data?.cart?.items?.length || 0;
+  const isStaff = meData?.me?.isStaff;
 
   return (
     <nav className="nav">
@@ -32,6 +43,7 @@ export default function Navbar() {
           {cartCount > 0 && <span className="cart-badge">{cartCount}</span>}
         </Link>
         {isLoggedIn && <Link to="/orders">Orders</Link>}
+        {isLoggedIn && isStaff && <Link to="/admin">Admin</Link>}
         {!isLoggedIn && <Link to="/login">Login</Link>}
         {!isLoggedIn && <Link to="/register">Register</Link>}
         {isLoggedIn && (

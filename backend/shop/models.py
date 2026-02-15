@@ -40,6 +40,8 @@ class Order(models.Model):
     STATUS_CHOICES = [
         ("PENDING_PAYMENT", "Pending Payment"),
         ("PAID", "Paid"),
+        ("SHIPPED", "Shipped"),
+        ("DELIVERED", "Delivered"),
         ("CANCELLED", "Cancelled"),
     ]
 
