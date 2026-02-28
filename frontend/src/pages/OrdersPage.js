@@ -1,8 +1,6 @@
 import React, { useState } from "react";
 import { useQuery, gql } from "@apollo/client";
 
-const BACKEND_BASE_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:8000";
-
 const GET_ORDERS = gql`
   query Orders {
     orders {
@@ -28,7 +26,7 @@ export default function OrdersPage() {
       console.log("Token present:", !!token);
       
       // Simple fetch call to REST endpoint
-      const response = await fetch(`${BACKEND_BASE_URL}/api/receipts/download/${orderId}/`, {
+      const response = await fetch(`/api/receipts/download/${orderId}/`, {
         method: 'GET',
         headers: {
           'Authorization': `JWT ${token}`
