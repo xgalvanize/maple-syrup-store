@@ -6,6 +6,7 @@ import { ApolloProvider } from "@apollo/client";
 import "./styles.css";
 import { client } from "./apolloClient";
 import { AuthProvider } from "./state/AuthContext";
+import { NotificationProvider } from "./state/NotificationContext";
 import App from "./App";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
@@ -14,7 +15,9 @@ root.render(
   <ApolloProvider client={client}>
     <BrowserRouter>
       <AuthProvider>
-        <App />
+        <NotificationProvider>
+          <App />
+        </NotificationProvider>
       </AuthProvider>
     </BrowserRouter>
   </ApolloProvider>

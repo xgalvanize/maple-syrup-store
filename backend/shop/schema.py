@@ -6,6 +6,7 @@ from django.db import transaction
 
 from .models import Product, Cart, CartItem, Order, OrderItem
 from .shipping import calculate_shipping_cents, estimate_shipping
+from .emails import send_order_confirmation, send_admin_order_notification, send_shipment_notification
 
 User = get_user_model()
 
@@ -184,6 +185,14 @@ class Checkout(graphene.Mutation):
         if not items:
             raise Exception("Cart is empty")
 
+        # Check inventory availability before creating order
+        for item in items:
+            if item.product.inventory < item.quantity:
+                raise Exception(
+                    f"Insufficient inventory for {item.product.name}. "
+                    f"Available: {item.product.inventory}, Requested: {item.quantity}"
+                )
+
         subtotal = sum(i.product.price_cents * i.quantity for i in items)
         shipping_cents, shipping_zone = estimate_shipping(shipping_country, shipping_region, shipping_postal)
         total = subtotal + shipping_cents
@@ -208,11 +217,20 @@ class Checkout(graphene.Mutation):
             OrderItem.objects.create(
                 order=order,
                 product=item.product,
+                product_name=item.product.name,
                 quantity=item.quantity,
                 price_cents=item.product.price_cents,
             )
+            # Decrement inventory after creating order item
+            item.product.inventory -= item.quantity
+            item.product.save()
 
         cart.items.all().delete()
+        
+        # Send email notifications
+        send_order_confirmation(order)
+        send_admin_order_notification(order)
+        
         return Checkout(order=order)
 
 
@@ -315,8 +333,14 @@ class UpdateOrderStatus(graphene.Mutation):
         if status not in allowed_statuses:
             raise Exception("Invalid order status")
         order = Order.objects.get(pk=order_id)
+        old_status = order.status
         order.status = status
         order.save()
+        
+        # Send shipment notification when status changes to SHIPPED
+        if old_status != "SHIPPED" and status == "SHIPPED":
+            send_shipment_notification(order)
+        
         return UpdateOrderStatus(order=order)
 
 
@@ -332,6 +356,97 @@ class MarkOrderPaid(graphene.Mutation):
         order.status = "PAID"
         order.save()
         return MarkOrderPaid(order=order)
+
+
+class GenerateReceipt(graphene.Mutation):
+    success = graphene.Boolean()
+    message = graphene.String()
+    filename = graphene.String()
+
+    class Arguments:
+        order_id = graphene.ID(required=True)
+
+    def mutate(self, info, order_id):
+        import requests
+        import os
+
+        user = info.context.user
+        
+        # Check authentication
+        if not user.is_authenticated:
+            return GenerateReceipt(
+                success=False,
+                message="Authentication required",
+                filename=None,
+            )
+        
+        try:
+            order = Order.objects.get(pk=order_id, user=user)
+        except Order.DoesNotExist:
+            return GenerateReceipt(
+                success=False,
+                message="Order not found",
+                filename=None,
+            )
+
+        pdf_service_url = os.getenv("PDF_SERVICE_URL", "http://pdf-service:8000")
+
+        # Prepare order data
+        order_items = [
+            {
+                "name": item.product.name if item.product else "Unknown Product",
+                "quantity": item.quantity,
+                "price_cents": item.price_cents,
+            }
+            for item in order.items.all()
+        ]
+
+        # Build shipping address
+        shipping_address = f"{order.shipping_address1}"
+        if order.shipping_address2:
+            shipping_address += f", {order.shipping_address2}"
+
+        receipt_request = {
+            "order_id": order.id,
+            "user_email": order.payer_email or user.email,
+            "total_cents": order.total_cents,
+            "shipping_cents": order.shipping_cents,
+            "created_at": order.created_at.strftime("%B %d, %Y"),
+            "items": order_items,
+            "shipping_address": shipping_address,
+            "shipping_city": order.shipping_city,
+            "shipping_country": order.shipping_country,
+        }
+
+        try:
+            response = requests.post(
+                f"{pdf_service_url}/generate-receipt",
+                json=receipt_request,
+                timeout=30,
+            )
+
+            if response.status_code == 200:
+                pdf_data = response.json()
+                return GenerateReceipt(
+                    success=True,
+                    message="Receipt generated successfully",
+                    filename=pdf_data.get("filename"),
+                )
+            else:
+                return GenerateReceipt(
+                    success=False,
+                    message="Failed to generate receipt",
+                    filename=None,
+                )
+        except Exception as e:
+            return GenerateReceipt(
+                success=False,
+                message=f"Error: {str(e)}",
+                filename=None,
+            )
+
+
+
 
 
 class Query(graphene.ObjectType):
@@ -396,3 +511,4 @@ class Mutation(graphene.ObjectType):
     delete_product = DeleteProduct.Field()
     update_order_status = UpdateOrderStatus.Field()
     mark_order_paid = MarkOrderPaid.Field()
+    generate_receipt = GenerateReceipt.Field()

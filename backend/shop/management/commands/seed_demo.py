@@ -21,16 +21,19 @@ class Command(BaseCommand):
         else:
             self.stdout.write("Demo user already exists (ensured non-staff)")
 
+        # Delete old products with 500ml
+        Product.objects.filter(name__contains="500ml").delete()
+
         products = [
             {
-                "name": "Light Maple Syrup 500ml",
+                "name": "Light Maple Syrup 1L",
                 "description": "Golden, delicate flavor. Perfect for pancakes and waffles.",
                 "price_cents": 2000,
                 "image_url": "/images/light-maple.jpg",
                 "inventory": 50,
             },
             {
-                "name": "Dark Maple Syrup 500ml",
+                "name": "Dark Maple Syrup 1L",
                 "description": "Bold, rich flavor. Excellent for baking and cooking.",
                 "price_cents": 2000,
                 "image_url": "/images/dark-maple.jpg",
@@ -47,4 +50,4 @@ class Command(BaseCommand):
             if created:
                 created_count += 1
 
-        self.stdout.write(self.style.SUCCESS(f"Seeded {created_count} products"))
+        self.stdout.write(self.style.SUCCESS(f"Seeded {created_count} new products"))

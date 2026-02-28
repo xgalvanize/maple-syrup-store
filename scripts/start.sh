@@ -14,14 +14,12 @@ if [ ! -f helm-chart/secrets.yaml ]; then
     exit 1
 fi
 
-# Build images
-echo '📦 Building images...'
-docker build -q -t maple-syrup-backend:latest backend
-docker build -q -t maple-syrup-frontend:latest frontend
-
-# Load into kind
-echo '📤 Loading images into cluster...'
-kind load docker-image --name atlas maple-syrup-backend:latest maple-syrup-frontend:latest
+# Check if images exist in kind cluster
+echo '🔍 Checking for images...'
+if ! docker image inspect maple-syrup-backend:latest >/dev/null 2>&1; then
+    echo '⚠️  Images not found! Please run ./scripts/rebuild.sh first to build images.'
+    exit 1
+fi
 
 # Clean up legacy manifests (pre-Helm)
 echo '🧹 Cleaning legacy resources (if any)...'
@@ -39,6 +37,7 @@ helm upgrade --install maple-syrup ./helm-chart \
 echo '⏳ Waiting for deployments...'
 kubectl rollout status deployment -l app=backend -n default
 kubectl rollout status deployment -l app=frontend -n default
+kubectl rollout status deployment -l app=pdf-service -n default
 kubectl rollout status deployment -l app=postgres -n default
 
 # Install dashboard

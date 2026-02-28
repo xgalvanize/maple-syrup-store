@@ -1,6 +1,8 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useQuery, useMutation, gql } from "@apollo/client";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../state/AuthContext";
+import { useNotification } from "../state/NotificationContext";
 
 const GET_CART = gql`
   query Cart {
@@ -33,10 +35,24 @@ const REMOVE_ITEM = gql`
 `;
 
 export default function CartPage() {
-  const { loading, error, data } = useQuery(GET_CART, { fetchPolicy: "cache-and-network" });
+  const { isLoggedIn } = useAuth();
+  const { showNotification } = useNotification();
+  const navigate = useNavigate();
+  const { loading, error, data } = useQuery(GET_CART, { 
+    fetchPolicy: "cache-and-network",
+    skip: !isLoggedIn
+  });
   const [updateItem] = useMutation(UPDATE_ITEM, { refetchQueries: ["Cart"] });
   const [removeItem] = useMutation(REMOVE_ITEM, { refetchQueries: ["Cart"] });
 
+  useEffect(() => {
+    if (!isLoggedIn) {
+      showNotification("Please log in to access your cart", "error");
+      navigate("/login");
+    }
+  }, [isLoggedIn, showNotification, navigate]);
+
+  if (!isLoggedIn) return null;
   if (loading) return <p>Loading cart...</p>;
   if (error) return <p>Error: {error.message}</p>;
 

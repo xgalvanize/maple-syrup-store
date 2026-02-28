@@ -2,6 +2,7 @@ import React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 
 import Navbar from "./components/Navbar";
+import Notification from "./components/Notification";
 import HomePage from "./pages/HomePage";
 import CartPage from "./pages/CartPage";
 import CheckoutPage from "./pages/CheckoutPage";
@@ -15,6 +16,7 @@ export default function App() {
   return (
     <div>
       <Navbar />
+      <Notification />
       <main className="container">
         <Routes>
           <Route path="/" element={<HomePage />} />

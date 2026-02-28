@@ -1,0 +1,4 @@
+#!/bin/bash
+set -e
+cloudflared tunnel --url http://localhost:8081
+#cloudflared tunnel run --token eyJhIjoiZmJhZWFlNzg1MzA5YzZjY2JjY2VlYjRkMTQzNDRlZDAiLCJ0IjoiMmI5ZTY2YmItNjkxYS00MWI0LWE3MWItOTY1ZjBjN2YxNjlmIiwicyI6Ik1HUmtaVE0xTUdZdFpqZ3lZUzAwTmpSbExXRTJZbVV0T1dFek56VTROVGhtTTJSbSJ9

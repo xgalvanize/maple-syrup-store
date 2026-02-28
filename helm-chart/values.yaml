@@ -23,6 +23,7 @@ backend:
     DB_PORT: "5432"
     ALLOWED_HOSTS: "localhost,backend,*"
     DEBUG: "false"
+    PDF_SERVICE_URL: "http://pdf-service:8000"
   
   # Secrets (should be in helm-chart/secrets.yaml)
   secrets:
@@ -42,6 +43,23 @@ frontend:
     limits:
       memory: 256Mi
       cpu: 200m
+
+pdfService:
+  image:
+    repository: maple-syrup-pdf-service
+    tag: latest
+    pullPolicy: Always
+    pullPolicy: IfNotPresent
+  
+  replicaCount: 1
+  
+  resources:
+    requests:
+      memory: 256Mi
+      cpu: 100m
+    limits:
+      memory: 512Mi
+      cpu: 500m
 
 postgres:
   image:

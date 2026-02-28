@@ -4,18 +4,10 @@ set -e
 PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && cd .. && pwd)"
 cd "$PROJECT_DIR"
 
-echo '🍁 Building and pushing new images...'
+echo '🍁 Rebuilding Maple Syrup Store...'
 
-# Build images
-echo '📦 Building backend...'
-docker build -q -t maple-syrup-backend:latest backend
-
-echo '📦 Building frontend...'
-docker build -q -t maple-syrup-frontend:latest frontend
-
-# Load into kind
-echo '📤 Loading images into cluster...'
-kind load docker-image --name atlas maple-syrup-backend:latest maple-syrup-frontend:latest
+# Build and load images
+./scripts/build.sh
 
 # Upgrade Helm release
 echo '🚀 Upgrading Helm release...'
@@ -32,5 +24,6 @@ fi
 echo '⏳ Waiting for deployments...'
 kubectl rollout status deployment -l app=backend
 kubectl rollout status deployment -l app=frontend
+kubectl rollout status deployment -l app=pdf-service
 
 echo '✅ Rebuild complete!'

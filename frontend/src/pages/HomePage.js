@@ -2,6 +2,7 @@ import React from "react";
 import { useQuery, useMutation, gql } from "@apollo/client";
 import ProductCard from "../components/ProductCard";
 import { useAuth } from "../state/AuthContext";
+import { useNotification } from "../state/NotificationContext";
 
 const GET_PRODUCTS = gql`
   query Products {
@@ -25,6 +26,7 @@ const ADD_TO_CART = gql`
 
 export default function HomePage() {
   const { isLoggedIn } = useAuth();
+  const { showNotification } = useNotification();
   const { loading, error, data } = useQuery(GET_PRODUCTS);
   const [addToCart] = useMutation(ADD_TO_CART, { refetchQueries: ["Cart"] });
 
@@ -32,8 +34,17 @@ export default function HomePage() {
   if (error) return <p>Error: {error.message}</p>;
 
   async function handleAdd(productId) {
-    if (!isLoggedIn) return alert("Please log in to add items to your cart.");
-    await addToCart({ variables: { productId, quantity: 1 } });
+    if (!isLoggedIn) {
+      showNotification("Please log in to add items to your cart.", "error");
+      return;
+    }
+    try {
+      const product = data.products.find((p) => p.id === productId);
+      await addToCart({ variables: { productId, quantity: 1 } });
+      showNotification(`${product?.name} added to cart!`, "success");
+    } catch (err) {
+      showNotification("Failed to add item to cart", "error");
+    }
   }
 
   return (

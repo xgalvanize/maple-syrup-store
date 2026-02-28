@@ -13,10 +13,12 @@ pkill -f 'kubectl port-forward' || true
 echo '🔄 Restarting deployments...'
 kubectl rollout restart deployment -l app=backend
 kubectl rollout restart deployment -l app=frontend
+kubectl rollout restart deployment -l app=pdf-service
 
 echo '⏳ Waiting for deployments...'
 kubectl rollout status deployment -l app=backend
 kubectl rollout status deployment -l app=frontend
+kubectl rollout status deployment -l app=pdf-service
 
 # Start port-forwards
 echo '🔗 Starting port-forwards...'
