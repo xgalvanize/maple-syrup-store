@@ -31,6 +31,7 @@ backend:
     SECRET_KEY: django-insecure-change-me-in-secrets-yaml
 
 frontend:
+  enabled: true
   image:
     repository: maple-syrup-frontend
     tag: latest
@@ -97,3 +98,4 @@ service:
   backend:
     type: ClusterIP
     port: 8000
+    nodePort: null

@@ -1,0 +1,20 @@
+# Values override for unified deployment on 10.0.0.140
+# All services run in the same cluster
+
+frontend:
+  enabled: true
+
+backend:
+  env:
+    ALLOWED_HOSTS: "localhost,127.0.0.1,10.0.0.140,backend,frontend,*.trycloudflare.com,*"
+    CORS_ALLOWED_ORIGINS: "http://localhost:3000,http://10.0.0.140:30081,http://frontend"
+    CSRF_TRUSTED_ORIGINS: "http://localhost:3000,http://10.0.0.140:30081,http://frontend"
+
+service:
+  frontend:
+    type: NodePort
+    port: 80
+    nodePort: 30081
+  backend:
+    type: ClusterIP
+    port: 8000

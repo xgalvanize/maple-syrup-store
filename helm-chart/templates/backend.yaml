@@ -56,10 +56,13 @@ metadata:
   labels:
     {{- include "maple-syrup-store.labels" . | nindent 4 }}
 spec:
-  type: ClusterIP
+  type: {{ .Values.service.backend.type }}
   ports:
   - port: 8000
     targetPort: 8000
+    {{- if .Values.service.backend.nodePort }}
+    nodePort: {{ .Values.service.backend.nodePort }}
+    {{- end }}
   selector:
     {{- include "maple-syrup-store.selectorLabels" . | nindent 4 }}
     app: backend

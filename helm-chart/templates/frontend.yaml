@@ -1,3 +1,4 @@
+{{- if .Values.frontend.enabled }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -33,10 +34,14 @@ metadata:
   labels:
     {{- include "maple-syrup-store.labels" . | nindent 4 }}
 spec:
-  type: ClusterIP
+  type: {{ .Values.service.frontend.type }}
   ports:
   - port: 80
     targetPort: 80
+    {{- if and (eq .Values.service.frontend.type "NodePort") .Values.service.frontend.nodePort }}
+    nodePort: {{ .Values.service.frontend.nodePort }}
+    {{- end }}
   selector:
     {{- include "maple-syrup-store.selectorLabels" . | nindent 4 }}
     app: frontend
+{{- end }}
