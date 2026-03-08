@@ -239,6 +239,14 @@ body {
   box-shadow: 0 4px 12px rgba(210, 105, 30, 0.3);
 }
 
+.button:focus-visible,
+.button-outline:focus-visible,
+.linklike:focus-visible,
+.nav a:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
 .button:disabled {
   opacity: 0.6;
   cursor: not-allowed;
@@ -308,6 +316,27 @@ body {
 .muted {
   color: var(--muted);
   font-size: 0.95rem;
+}
+
+.state-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.state-card h2 {
+  margin: 0;
+  font-size: 1.3rem;
+  color: var(--primary);
+}
+
+.product-image-placeholder {
+  background: linear-gradient(135deg, #f5e6d3 0%, #ede7df 100%);
 }
 
 .badge {

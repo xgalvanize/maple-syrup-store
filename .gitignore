@@ -16,10 +16,14 @@ __pycache__/
 *.egg-info/
 .venv/
 venv/
+.pytest_cache/
+htmlcov/
+.coverage
 
 # Node
 node_modules/
 build/
+coverage/
 
 # OS
 .DS_Store

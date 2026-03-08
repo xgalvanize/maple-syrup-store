@@ -50,7 +50,7 @@ class CartType(DjangoObjectType):
 class OrderItemType(DjangoObjectType):
     class Meta:
         model = OrderItem
-        fields = ("id", "product", "quantity", "price_cents")
+        fields = ("id", "product", "product_name", "quantity", "price_cents")
 
 
 class OrderType(DjangoObjectType):

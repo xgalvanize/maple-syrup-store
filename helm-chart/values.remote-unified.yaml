@@ -1,4 +1,4 @@
-# Values override for unified deployment on 10.0.0.140
+# Values override for unified deployment on 10.0.0.140https://franklin-renewal-females-residence.trycloudflare.com
 # All services run in the same cluster
 
 frontend:
@@ -7,8 +7,8 @@ frontend:
 backend:
   env:
     ALLOWED_HOSTS: "localhost,127.0.0.1,10.0.0.140,backend,frontend,*.trycloudflare.com,*"
-    CORS_ALLOWED_ORIGINS: "http://localhost:3000,http://10.0.0.140:30081,http://frontend"
-    CSRF_TRUSTED_ORIGINS: "http://localhost:3000,http://10.0.0.140:30081,http://frontend"
+    CORS_ALLOWED_ORIGINS: "http://localhost:3000,http://10.0.0.140:30081,http://frontend,https://franklin-renewal-females-residence.trycloudflare.com"
+    CSRF_TRUSTED_ORIGINS: "http://localhost:3000,http://10.0.0.140:30081,http://frontend,"
 
 service:
   frontend:

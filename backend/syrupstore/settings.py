@@ -55,16 +55,27 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "syrupstore.wsgi.application"
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": os.environ.get("DB_NAME", "maple_store"),
-        "USER": os.environ.get("DB_USER", "maple_user"),
-        "PASSWORD": os.environ.get("DB_PASSWORD", "maple_pass"),
-        "HOST": os.environ.get("DB_HOST", "postgres"),
-        "PORT": os.environ.get("DB_PORT", "5432"),
+# Database configuration with SQLite support for testing
+DB_ENGINE = os.environ.get("DB_ENGINE", "django.db.backends.postgresql")
+
+if DB_ENGINE == "django.db.backends.sqlite3":
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": os.environ.get("DB_NAME", ":memory:"),
+        }
     }
-}
+else:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": os.environ.get("DB_NAME", "maple_store"),
+            "USER": os.environ.get("DB_USER", "maple_user"),
+            "PASSWORD": os.environ.get("DB_PASSWORD", "maple_pass"),
+            "HOST": os.environ.get("DB_HOST", "postgres"),
+            "PORT": os.environ.get("DB_PORT", "5432"),
+        }
+    }
 
 AUTH_PASSWORD_VALIDATORS = [
     {

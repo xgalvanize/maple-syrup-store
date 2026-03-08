@@ -49,3 +49,31 @@ This keeps costs reasonable for nearby customers while still allowing supporters
 ## Kubernetes
 
 Basic manifests live in the `k8s/` folder for backend, frontend, and postgres.
+
+## Testing
+
+Comprehensive automated tests are available for both backend and frontend.
+
+### Run All Tests
+
+```bash
+./scripts/test.sh
+```
+
+### Run Backend Tests Only
+
+```bash
+cd backend
+./run_tests.sh
+# Or directly: pytest -v
+```
+
+### Run Frontend Tests Only
+
+```bash
+cd frontend
+./run_tests.sh
+# Or directly: npm test -- --watchAll=false
+```
+
+**See [TESTING.md](TESTING.md) for detailed testing documentation, coverage reports, and best practices.**
