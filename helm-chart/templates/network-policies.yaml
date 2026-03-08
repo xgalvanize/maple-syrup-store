@@ -1,0 +1,188 @@
+{{- if .Values.networkPolicy.enabled }}
+---
+# Network Policy for Backend
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "maple-syrup-store.fullname" . }}-backend-netpol
+  labels:
+    {{- include "maple-syrup-store.labels" . | nindent 4 }}
+spec:
+  podSelector:
+    matchLabels:
+      {{- include "maple-syrup-store.selectorLabels" . | nindent 6 }}
+      app: backend
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  # Allow from frontend
+  - from:
+    - podSelector:
+        matchLabels:
+          {{- include "maple-syrup-store.selectorLabels" . | nindent 10 }}
+          app: frontend
+    ports:
+    - protocol: TCP
+      port: 8000
+  # Allow from PDF service
+  - from:
+    - podSelector:
+        matchLabels:
+          {{- include "maple-syrup-store.selectorLabels" . | nindent 10 }}
+          app: pdf-service
+    ports:
+    - protocol: TCP
+      port: 8000
+  egress:
+  # Allow to PostgreSQL
+  - to:
+    - podSelector:
+        matchLabels:
+          {{- include "maple-syrup-store.selectorLabels" . | nindent 10 }}
+          app: postgres
+    ports:
+    - protocol: TCP
+      port: 5432
+  # Allow to PDF service
+  - to:
+    - podSelector:
+        matchLabels:
+          {{- include "maple-syrup-store.selectorLabels" . | nindent 10 }}
+          app: pdf-service
+    ports:
+    - protocol: TCP
+      port: 8000
+  # Allow DNS
+  - to:
+    - namespaceSelector: {}
+      podSelector:
+        matchLabels:
+          k8s-app: kube-dns
+    ports:
+    - protocol: UDP
+      port: 53
+  # Allow HTTPS for external services (email, etc)
+  - to:
+    - namespaceSelector: {}
+    ports:
+    - protocol: TCP
+      port: 443
+    - protocol: TCP
+      port: 587
+    - protocol: TCP
+      port: 465
+---
+# Network Policy for Frontend
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "maple-syrup-store.fullname" . }}-frontend-netpol
+  labels:
+    {{- include "maple-syrup-store.labels" . | nindent 4 }}
+spec:
+  podSelector:
+    matchLabels:
+      {{- include "maple-syrup-store.selectorLabels" . | nindent 6 }}
+      app: frontend
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  # Allow from anywhere (public web traffic)
+  - from: []
+    ports:
+    - protocol: TCP
+      port: 80
+  egress:
+  # Allow to backend
+  - to:
+    - podSelector:
+        matchLabels:
+          {{- include "maple-syrup-store.selectorLabels" . | nindent 10 }}
+          app: backend
+    ports:
+    - protocol: TCP
+      port: 8000
+  # Allow DNS
+  - to:
+    - namespaceSelector: {}
+      podSelector:
+        matchLabels:
+          k8s-app: kube-dns
+    ports:
+    - protocol: UDP
+      port: 53
+---
+# Network Policy for PostgreSQL
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "maple-syrup-store.fullname" . }}-postgres-netpol
+  labels:
+    {{- include "maple-syrup-store.labels" . | nindent 4 }}
+spec:
+  podSelector:
+    matchLabels:
+      {{- include "maple-syrup-store.selectorLabels" . | nindent 6 }}
+      app: postgres
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  # Only allow from backend
+  - from:
+    - podSelector:
+        matchLabels:
+          {{- include "maple-syrup-store.selectorLabels" . | nindent 10 }}
+          app: backend
+    ports:
+    - protocol: TCP
+      port: 5432
+  egress:
+  # Allow DNS
+  - to:
+    - namespaceSelector: {}
+      podSelector:
+        matchLabels:
+          k8s-app: kube-dns
+    ports:
+    - protocol: UDP
+      port: 53
+---
+# Network Policy for PDF Service
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "maple-syrup-store.fullname" . }}-pdf-service-netpol
+  labels:
+    {{- include "maple-syrup-store.labels" . | nindent 4 }}
+spec:
+  podSelector:
+    matchLabels:
+      {{- include "maple-syrup-store.selectorLabels" . | nindent 6 }}
+      app: pdf-service
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  # Only allow from backend
+  - from:
+    - podSelector:
+        matchLabels:
+          {{- include "maple-syrup-store.selectorLabels" . | nindent 10 }}
+          app: backend
+    ports:
+    - protocol: TCP
+      port: 8000
+  egress:
+  # Allow DNS
+  - to:
+    - namespaceSelector: {}
+      podSelector:
+        matchLabels:
+          k8s-app: kube-dns
+    ports:
+    - protocol: UDP
+      port: 53
+{{- end }}

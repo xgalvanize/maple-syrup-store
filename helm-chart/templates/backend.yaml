@@ -17,12 +17,48 @@ spec:
         {{- include "maple-syrup-store.selectorLabels" . | nindent 8 }}
         app: backend
     spec:
+      {{- if .Values.securityContext.enabled }}
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 1000
+        seccompProfile:
+          type: RuntimeDefault
+      {{- end }}
       containers:
       - name: backend
         image: "{{ .Values.backend.image.repository }}:{{ .Values.backend.image.tag }}"
         imagePullPolicy: {{ .Values.backend.image.pullPolicy }}
+        {{- if .Values.securityContext.enabled }}
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: false
+          runAsNonRoot: true
+          runAsUser: 1000
+          capabilities:
+            drop:
+            - ALL
+        {{- end }}
         ports:
         - containerPort: 8000
+          name: http
+          protocol: TCP
+        livenessProbe:
+          httpGet:
+            path: /api/health/
+            port: http
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /api/health/
+            port: http
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3
         env:
         {{- range $key, $value := .Values.backend.env }}
         - name: {{ $key }}

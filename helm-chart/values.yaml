@@ -99,3 +99,10 @@ service:
     type: ClusterIP
     port: 8000
     nodePort: null
+
+# Security Configuration
+securityContext:
+  enabled: true
+
+networkPolicy:
+  enabled: true
