@@ -50,6 +50,18 @@ This keeps costs reasonable for nearby customers while still allowing supporters
 
 Basic manifests live in the `k8s/` folder for backend, frontend, and postgres.
 
+## Security
+
+Security hardening measures are implemented including:
+- Rate limiting on all API endpoints
+- HTTPS/SSL support with HSTS
+- Content Security Policy (CSP) headers
+- Network policies for pod-to-pod communication
+- Secure session and cookie settings
+- Health check endpoints
+
+**See [SECURITY.md](SECURITY.md) for comprehensive security documentation, production checklist, and best practices.**
+
 ## Testing
 
 Comprehensive automated tests are available for both backend and frontend.

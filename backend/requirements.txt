@@ -8,6 +8,11 @@ gunicorn>=22.0
 requests>=2.31.0
 reportlab>=4.0.9
 
+# Security
+django-ratelimit>=4.1.0
+django-csp>=3.8
+django-health-check>=3.18.0
+
 # Testing dependencies
 pytest>=8.0.0
 pytest-django>=4.7.0
