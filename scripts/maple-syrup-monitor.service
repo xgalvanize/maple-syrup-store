@@ -1,0 +1,30 @@
+[Unit]
+Description=Maple Syrup Store - Kubernetes Pod Monitor
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=borg
+WorkingDirectory=/home/borg/Desktop/online-store/maple-syrup-store
+Environment="KUBECONFIG=/home/borg/.kube/k3s-remote"
+Environment="CHECK_INTERVAL=60"
+Environment="NAMESPACE=default"
+# Optional: Set webhook URL for Discord/Slack notifications
+# Environment="WEBHOOK_URL=https://discord.com/api/webhooks/..."
+# Optional: Set admin email for critical alerts
+# Environment="ADMIN_EMAIL=admin@example.com"
+
+ExecStart=/home/borg/Desktop/online-store/maple-syrup-store/scripts/monitor-pods.sh
+
+# Restart policy
+Restart=always
+RestartSec=30
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=maple-syrup-monitor
+
+[Install]
+WantedBy=multi-user.target

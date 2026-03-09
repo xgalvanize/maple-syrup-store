@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useMutation, useQuery, useLazyQuery, gql } from "@apollo/client";
 import { useNavigate } from "react-router-dom";
+import { useNotification } from "../state/NotificationContext";
 
 const CHECKOUT = gql`
   mutation Checkout(
@@ -48,6 +49,8 @@ const SHIPPING_ESTIMATE = gql`
 
 export default function CheckoutPage() {
   const navigate = useNavigate();
+  const { showNotification } = useNotification();
+  const paymentEmail = "payments@maplesyrup.co";
   const [paymentReference, setPaymentReference] = useState("");
   const [payerEmail, setPayerEmail] = useState("");
   const [shippingAddress1, setShippingAddress1] = useState("");
@@ -56,6 +59,7 @@ export default function CheckoutPage() {
   const [shippingCountry, setShippingCountry] = useState("CA");
   const [shippingRegion, setShippingRegion] = useState("ON");
   const [shippingPostal, setShippingPostal] = useState("");
+  const [clipboardMessage, setClipboardMessage] = useState("");
 
   const { data: cartData } = useQuery(GET_CART, { fetchPolicy: "cache-and-network" });
   const [fetchShipping, { data: shippingData }] = useLazyQuery(SHIPPING_ESTIMATE);
@@ -82,7 +86,36 @@ export default function CheckoutPage() {
       }
     });
     if (result?.data?.checkout?.order?.id) {
+      showNotification(
+        "Order placed. Confirmation email usually arrives in 2-3 minutes. If not, check spam/junk and verify your payer email.",
+        "success",
+        7000
+      );
       navigate("/orders");
+    }
+  }
+
+  async function copyPaymentEmail() {
+    try {
+      await navigator.clipboard.writeText(paymentEmail);
+      setClipboardMessage("Payment email copied.");
+    } catch (err) {
+      setClipboardMessage("Could not copy automatically. Please copy it manually.");
+    }
+  }
+
+  async function pastePaymentReference() {
+    try {
+      const text = await navigator.clipboard.readText();
+      const trimmed = text.trim();
+      if (!trimmed) {
+        setClipboardMessage("Clipboard is empty.");
+        return;
+      }
+      setPaymentReference(trimmed);
+      setClipboardMessage("Confirmation number pasted.");
+    } catch (err) {
+      setClipboardMessage("Clipboard access blocked. Paste manually into the field.");
     }
   }
 
@@ -94,7 +127,16 @@ export default function CheckoutPage() {
   return (
     <div className="card">
       <h2>Checkout (Interac e-Transfer)</h2>
-      <p className="muted">Send an Interac e-Transfer to payments@maplesyrup.co and enter the confirmation number below.</p>
+      <p className="muted">Send an Interac e-Transfer to the email below, then paste your transfer confirmation number.</p>
+      <div className="notice">
+        <div className="row space-between">
+          <strong>Payment recipient:</strong>
+          <strong>{paymentEmail}</strong>
+        </div>
+        <div className="row">
+          <button className="button-outline" type="button" onClick={copyPaymentEmail}>Copy payment email</button>
+        </div>
+      </div>
       <form className="form" onSubmit={handleSubmit}>
         <label className="label">Street Address</label>
         <input className="input" value={shippingAddress1} onChange={(e) => setShippingAddress1(e.target.value)} required />
@@ -107,6 +149,12 @@ export default function CheckoutPage() {
 
         <label className="label">Transfer Confirmation Number</label>
         <input className="input" value={paymentReference} onChange={(e) => setPaymentReference(e.target.value)} required />
+        <div className="row">
+          <button className="button-outline" type="button" onClick={pastePaymentReference}>Paste confirmation number</button>
+        </div>
+        <p className="muted">Tip: this is the code Interac gives after sending payment (often shown as a confirmation/reference number).</p>
+
+        {clipboardMessage && <p className="muted">{clipboardMessage}</p>}
 
         <label className="label">Payer Email</label>
         <input className="input" type="email" value={payerEmail} onChange={(e) => setPayerEmail(e.target.value)} required />

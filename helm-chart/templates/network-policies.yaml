@@ -62,9 +62,10 @@ spec:
     ports:
     - protocol: UDP
       port: 53
-  # Allow HTTPS for external services (email, etc)
+  # Allow HTTPS/SMTP to external services (email, payment APIs, etc)
   - to:
-    - namespaceSelector: {}
+    - ipBlock:
+        cidr: 0.0.0.0/0
     ports:
     - protocol: TCP
       port: 443

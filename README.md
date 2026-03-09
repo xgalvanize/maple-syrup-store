@@ -50,6 +50,32 @@ This keeps costs reasonable for nearby customers while still allowing supporters
 
 Basic manifests live in the `k8s/` folder for backend, frontend, and postgres.
 
+## Deployment & Monitoring
+
+Automated deployment and monitoring tools are available for efficient operations.
+
+### Quick Deployment Commands
+
+```bash
+# Deploy frontend updates (fast, for development)
+./scripts/deploy-frontend-remote.sh
+
+# Full rebuild with persistent changes (for production)
+./scripts/rebuild-remote.sh
+
+# Auto-deploy on file changes (for live development)
+./scripts/watch-frontend.sh
+
+# Check pod health
+./scripts/monitor-pods.sh --once
+
+# Setup continuous monitoring
+./scripts/setup-monitoring.sh
+systemctl --user start maple-syrup-monitor
+```
+
+**See [DEPLOYMENT.md](DEPLOYMENT.md) for comprehensive deployment automation, monitoring setup, and troubleshooting guides.**
+
 ## Security
 
 Security hardening measures are implemented including:

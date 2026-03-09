@@ -5,6 +5,8 @@ frontend:
   enabled: true
 
 backend:
+  probes:
+    path: /admin/login/
   env:
     ALLOWED_HOSTS: "localhost,127.0.0.1,10.0.0.140,backend,frontend,*.trycloudflare.com,*"
     CORS_ALLOWED_ORIGINS: "http://localhost:3000,http://10.0.0.140:30081,http://frontend,https://franklin-renewal-females-residence.trycloudflare.com"

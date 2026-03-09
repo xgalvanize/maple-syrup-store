@@ -38,8 +38,29 @@ export default function Navbar() {
       </div>
       <div className="nav-links">
         <Link to="/" title="Browse products">Shop</Link>
-        <Link to="/cart" className="nav-link-cart" title="View shopping cart">
-          Cart
+        <Link
+          to="/cart"
+          className="nav-link-cart"
+          title="View shopping cart"
+          aria-label="Cart"
+        >
+          <svg
+            className="cart-icon"
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path
+              d="M3 4h2l1.7 9.1a2 2 0 0 0 2 1.6h7.6a2 2 0 0 0 2-1.5L20 7H7"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+            <circle cx="10" cy="19" r="1.8" fill="currentColor" />
+            <circle cx="17" cy="19" r="1.8" fill="currentColor" />
+          </svg>
           {cartCount > 0 && <span className="cart-badge" title={`${cartCount} items in cart`}>{cartCount}</span>}
         </Link>
         {isLoggedIn && <Link to="/orders" title="View your orders">Orders</Link>}

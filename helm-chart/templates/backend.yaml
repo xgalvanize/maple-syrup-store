@@ -25,6 +25,11 @@ spec:
         seccompProfile:
           type: RuntimeDefault
       {{- end }}
+      volumes:
+      - name: staticfiles
+        emptyDir: {}
+      - name: app-logs
+        emptyDir: {}
       containers:
       - name: backend
         image: "{{ .Values.backend.image.repository }}:{{ .Values.backend.image.tag }}"
@@ -43,9 +48,14 @@ spec:
         - containerPort: 8000
           name: http
           protocol: TCP
+        volumeMounts:
+        - name: staticfiles
+          mountPath: /app/staticfiles
+        - name: app-logs
+          mountPath: /app/logs
         livenessProbe:
           httpGet:
-            path: /api/health/
+            path: {{ .Values.backend.probes.path | quote }}
             port: http
           initialDelaySeconds: 30
           periodSeconds: 10
@@ -53,7 +63,7 @@ spec:
           failureThreshold: 3
         readinessProbe:
           httpGet:
-            path: /api/health/
+            path: {{ .Values.backend.probes.path | quote }}
             port: http
           initialDelaySeconds: 10
           periodSeconds: 5

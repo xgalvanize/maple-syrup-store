@@ -27,6 +27,7 @@ const ADD_TO_CART = gql`
 export default function HomePage() {
   const { isLoggedIn } = useAuth();
   const { showNotification } = useNotification();
+
   const { loading, error, data, refetch } = useQuery(GET_PRODUCTS);
   const [addingProductId, setAddingProductId] = useState(null);
   const [addToCart] = useMutation(ADD_TO_CART, { refetchQueries: ["Cart"] });
@@ -73,7 +74,7 @@ export default function HomePage() {
 
       {error && (
         <div className="state-card" role="alert">
-          <h2>Couldn’t load products</h2>
+          <h2>Couldn't load products</h2>
           <p className="muted">{error.message}</p>
           <button className="button" type="button" onClick={() => refetch()}>
             Retry

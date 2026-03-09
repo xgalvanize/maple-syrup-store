@@ -24,11 +24,14 @@ backend:
     ALLOWED_HOSTS: "localhost,backend,*"
     DEBUG: "false"
     PDF_SERVICE_URL: "http://pdf-service:8000"
+
+  probes:
+    path: /api/health/
   
   # Secrets (should be in helm-chart/secrets.yaml)
   secrets:
     DB_PASSWORD: maple_pass
-    SECRET_KEY: django-insecure-change-me-in-secrets-yaml
+    DJANGO_SECRET_KEY: django-insecure-change-me-in-secrets-yaml
 
 frontend:
   enabled: true

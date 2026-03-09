@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 
 import Navbar from "./components/Navbar";
@@ -11,8 +11,19 @@ import AdminPage from "./pages/AdminPage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import RequireAuth from "./components/RequireAuth";
+import { useAuth } from "./state/AuthContext";
+import { useNotification } from "./state/NotificationContext";
+import { setNotificationContext, setAuthContext } from "./apolloClient";
 
 export default function App() {
+  const { logout } = useAuth();
+  const { showNotification } = useNotification();
+
+  useEffect(() => {
+    setNotificationContext(showNotification);
+    setAuthContext({ logout });
+  }, [showNotification, logout]);
+
   return (
     <div>
       <Navbar />

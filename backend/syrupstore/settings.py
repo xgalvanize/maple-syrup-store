@@ -4,7 +4,13 @@ from datetime import timedelta
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "dev-secret-key")
+# In production, always require a strong SECRET_KEY from environment
+if not os.environ.get("DJANGO_SECRET_KEY") and os.environ.get("DJANGO_DEBUG", "true").lower() != "true":
+    raise ValueError(
+        "DJANGO_SECRET_KEY environment variable must be set in production. "
+        "Generate with: python -c 'from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())'"
+    )
+SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "dev-secret-key-unsafe-only-for-dev")
 DEBUG = os.environ.get("DJANGO_DEBUG", "true").lower() == "true"
 
 ALLOWED_HOSTS = os.environ.get(
