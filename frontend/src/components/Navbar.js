@@ -38,6 +38,13 @@ export default function Navbar() {
       </div>
       <div className="nav-links">
         <Link to="/" title="Browse products">Shop</Link>
+        {isLoggedIn && <Link to="/orders" title="View your orders">Orders</Link>}
+        {isLoggedIn && isStaff && <Link to="/admin" title="Admin dashboard">Admin</Link>}
+        {!isLoggedIn && <Link to="/login" title="Sign in to your account">Login</Link>}
+        {!isLoggedIn && <Link to="/register" title="Create a new account">Register</Link>}
+        {isLoggedIn && (
+          <button className="linklike" type="button" onClick={logout} title="Sign out">Logout</button>
+        )}
         <Link
           to="/cart"
           className="nav-link-cart"
@@ -63,13 +70,6 @@ export default function Navbar() {
           </svg>
           {cartCount > 0 && <span className="cart-badge" title={`${cartCount} items in cart`}>{cartCount}</span>}
         </Link>
-        {isLoggedIn && <Link to="/orders" title="View your orders">Orders</Link>}
-        {isLoggedIn && isStaff && <Link to="/admin" title="Admin dashboard">Admin</Link>}
-        {!isLoggedIn && <Link to="/login" title="Sign in to your account">Login</Link>}
-        {!isLoggedIn && <Link to="/register" title="Create a new account">Register</Link>}
-        {isLoggedIn && (
-          <button className="linklike" type="button" onClick={logout} title="Sign out">Logout</button>
-        )}
       </div>
     </nav>
   );
